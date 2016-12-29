@@ -1,0 +1,689 @@
+<!--
+Created using JS Bin
+http://jsbin.com
+
+Copyright (c) 2016 by anonymous (http://jsbin.com/xurucisago/1/edit)
+
+Released under the MIT license: http://jsbin.mit-license.org
+-->
+<meta name="robots" content="noindex">
+<html>
+<head>
+
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">  
+    
+    <script src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
+    
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    
+    <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css">
+    
+    <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+    
+    
+
+
+
+
+<style>
+        
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            font-family: sans-serif;
+        }
+        
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+
+        .sidepanel {
+            background-color: #FFF;
+            position: absolute;
+            top: 0;
+/*            right: 0;*/
+            bottom: 0;
+            width: 100%;
+            height: 13%;
+            color: #f4d192;
+            overflow: visible;
+            background: #2a2e2e;
+            border-bottom: solid #2B2F2E 1px;
+/*            text-align: center;*/
+        }
+    
+        .wrapper{
+            display: block;
+            padding: 4px 30px 0 30px;
+            background: 2a2e2e;
+        }
+        #panel, #flip {
+            padding: 5px;
+            border: solid 1px #c3c3c3;
+            background: white;
+            width: 20%;
+        }
+
+        #panel {
+            padding: 5px;
+            display: none;
+            text-align: left;
+        }
+    
+    h1{
+        background: #2a2e2e;
+        color: #f4d192
+    }
+    
+    
+    
+       ul.tab {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        ul.tab li {
+            float: left;
+            width: 20%;
+        }
+        ul.tab li a {
+            display: inline-block;
+            color: black;
+            text-align: center;
+            padding: 20px 0px 20px 0px;
+            width: 100%;
+            text-decoration: none;
+            transition: 0.2s;
+            font-size: 18px;
+            background: white;
+            border: black 2px solid;
+        }
+    
+        
+        ul.tab li a:hover {
+/*            font-weight: bold;*/
+        }
+        ul.tab li a:focus, .active {
+            background-color: skyblue;
+/*            font-weight: bold;*/
+/*            font-size: 18px;*/
+        }
+        .tablinks{
+/*            font-family: monospace;*/
+        }
+        .tabcontent {
+        display: none;
+        padding: 1px 15px 10px;
+        border-top: none;
+/*            width: 75%;*/
+        }    
+    
+    
+    
+    div#PennEast.tabcontent {
+        display: none;
+        background: #2a2e2e;
+        color: #f4d192;
+        border-bottom: black 1px solid;
+        
+    }
+    
+    
+    div#aim.tabcontent {
+        display: none;
+        background: #2a2e2e;
+        color: #f4d192;
+        border-bottom: black 1px solid;
+
+    }
+    
+    
+    div#NMD.tabcontent {
+        display: none;
+        background: #2a2e2e;
+        color: #f4d192;
+        border-bottom: black 1px solid;
+    }
+    
+    div#ESU.tabcontent {
+        display: none;
+        background: #2a2e2e;
+        color: #f4d192;
+        border-bottom: black 1px solid;
+    }
+    
+    div#VLC.tabcontent {
+        display: none;
+        background: #2a2e2e;
+        color: #f4d192;
+        border-bottom: black 1px solid;
+    }
+    
+    
+        div.cartodb-share a {
+            display: none;
+        }
+    
+    
+        div.cartodb-searchbox {
+            position: inherit;
+            margin: 850px 20px
+        }
+    
+     div.cartodb-zoom {
+         position: absolute;
+         bottom: 30px;
+         left: 15px;
+        }
+    
+    .topright {
+        float: right;
+        cursor: pointer;
+        font-size: 20px;
+    }
+        
+</style>
+
+
+<script>
+
+
+var dataLayer;
+var dataLayerZip;
+
+
+ $(document).ready(function () {
+        cartodb.createVis('map', 'https://jeeho-b.carto.com/api/v2/viz/d4080f36-9bd2-11e6-80d6-0e3ff518bd15/viz.json',
+                          {
+            cartodb_logo:false,
+            layer_selector:false,
+                          
+                          })
+        .done(function (vis, layers) {
+            dataLayer = layers[1].getSubLayer(0);
+            dataLayerINT = layers[1].getSubLayer(1);
+            dataLayerPE = layers[1].getSubLayer(2);
+            dataLayerAIM = layers[1].getSubLayer(3);
+            dataLayerNM = layers[1].getSubLayer(4);
+            dataLayerESU = layers[1].getSubLayer(5);
+            dataLayerVLC = layers[1].getSubLayer(6);
+            });
+
+
+
+//Java for checkboxes
+        function updateSql() {
+              var sqlPE = "SELECT * FROM intervenors_1";
+              var whereConditions = [];
+            
+    if ($('#PE_ind').is(':checked')) {
+                  whereConditions.push("category = 'Ind' AND project = 'PE'");
+              }
+ 	 if ($('#PE_adv').is(':checked')) {
+                  whereConditions.push("category = 'Adv' AND project = 'PE'");
+              }
+ 	 if ($('#PE_gov').is(':checked')) {
+                  whereConditions.push("category = 'Gov' AND project = 'PE'");
+              }
+ 	 if ($('#PE_bus').is(':checked')) {
+                  whereConditions.push("category = 'Bus' AND project = 'PE'");
+              }
+ 	 if ($('#PE_law').is(':checked')) {
+                  whereConditions.push("category = 'Lf' AND project = 'PE'");
+              }
+            
+            if (whereConditions.length > 0) {
+                  sqlPE+= ' WHERE ' + whereConditions.join(' OR ');
+              }
+              console.log(sqlPE);
+              dataLayerINT.setSQL(sqlPE);
+           }
+          
+        $('#PE_ind').change(function (){
+              updateSql();
+          });
+        $('#PE_adv').change(function (){
+              updateSql();
+          });
+        $('#PE_gov').change(function (){
+              updateSql();
+          });
+        $('#PE_bus').change(function (){
+              updateSql();
+          });
+        $('#PE_law').change(function (){
+              updateSql();
+          });
+       
+    
+    
+    
+    function updateTwoSql() {
+              var sqlAIMII = "SELECT * FROM intervenors_1";
+              var whereConditions = [];
+            
+    if ($('#AIM_ind').is(':checked')) {
+                  whereConditions.push("category = 'Ind' AND project = 'AIM'");
+              }
+ 	 if ($('#AIM_adv').is(':checked')) {
+                  whereConditions.push("category = 'Adv' AND project = 'AIM'");
+              }
+ 	 if ($('#AIM_gov').is(':checked')) {
+                  whereConditions.push("category = 'Gov' AND project = 'AIM'");
+              }
+ 	 if ($('#AIM_bus').is(':checked')) {
+                  whereConditions.push("category = 'Bus' AND project = 'AIM'");
+              }
+ 	 if ($('#AIM_law').is(':checked')) {
+                  whereConditions.push("category = 'Lf' AND project = 'AIM'");
+              }
+            
+            if (whereConditions.length > 0) {
+                  sqlAIMII+= ' WHERE ' + whereConditions.join(' OR ');
+              }
+              console.log(sqlAIMII);
+              dataLayerINT.setSQL(sqlAIMII);
+           }
+          
+        $('#AIM_ind').change(function (){
+              updateTwoSql();
+          });
+        $('#AIM_adv').change(function (){
+              updateTwoSql();
+          });
+        $('#AIM_gov').change(function (){
+              updateTwoSql();
+          });
+        $('#AIM_bus').change(function (){
+              updateTwoSql();
+          });
+        $('#AIM_law').change(function (){
+              updateTwoSql();
+          });
+
+     
+     
+     
+     
+     
+     function updateThreeSql() {
+              var sqlNMII = "SELECT * FROM intervenors_1";
+              var whereConditions = [];
+            
+    if ($('#NMD_ind').is(':checked')) {
+                  whereConditions.push("category = 'Ind' AND project = 'NMD'");
+              }
+ 	 if ($('#NMD_adv').is(':checked')) {
+                  whereConditions.push("category = 'Adv' AND project = 'NMD'");
+              }
+ 	 if ($('#NMD_gov').is(':checked')) {
+                  whereConditions.push("category = 'Gov' AND project = 'NMD'");
+              }
+ 	 if ($('#NMD_bus').is(':checked')) {
+                  whereConditions.push("category = 'Bus' AND project = 'NMD'");
+              }
+ 	 if ($('#NMD_law').is(':checked')) {
+                  whereConditions.push("category = 'Lf' AND project = 'NMD'");
+              }
+            
+            if (whereConditions.length > 0) {
+                  sqlNMII+= ' WHERE ' + whereConditions.join(' OR ');
+              }
+              console.log(sqlNMII);
+              dataLayerINT.setSQL(sqlNMII);
+           }
+          
+        $('#NMD_ind').change(function (){
+              updateThreeSql();
+          });
+        $('#NMD_adv').change(function (){
+              updateThreeSql();
+          });
+        $('#NMD_gov').change(function (){
+              updateThreeSql();
+          });
+        $('#NMD_bus').change(function (){
+              updateThreeSql();
+          });
+        $('#NMD_law').change(function (){
+              updateThreeSql();
+          });
+    
+     
+     
+    
+    function updateFourSql() {
+              var sqlESUII = "SELECT * FROM intervenors_1";
+              var whereConditions = [];
+            
+    if ($('#ESU_ind').is(':checked')) {
+                  whereConditions.push("category = 'Ind' AND project = 'ESU'");
+              }
+ 	 if ($('#ESU_adv').is(':checked')) {
+                  whereConditions.push("category = 'Adv' AND project = 'ESU'");
+              }
+ 	 if ($('#ESU_gov').is(':checked')) {
+                  whereConditions.push("category = 'Gov' AND project = 'ESU'");
+              }
+ 	 if ($('#ESU_bus').is(':checked')) {
+                  whereConditions.push("category = 'Bus' AND project = 'ESU'");
+              }
+ 	 if ($('#ESU_law').is(':checked')) {
+                  whereConditions.push("category = 'Lf' AND project = 'ESU'");
+              }
+            
+            if (whereConditions.length > 0) {
+                  sqlESUII+= ' WHERE ' + whereConditions.join(' OR ');
+              }
+              console.log(sqlESUII);
+              dataLayerINT.setSQL(sqlESUII);
+           }
+          
+        $('#ESU_ind').change(function (){
+              updateFourSql();
+          });
+        $('#ESU_adv').change(function (){
+              updateFourSql();
+          });
+        $('#ESU_gov').change(function (){
+              updateFourSql();
+          });
+        $('#ESU_bus').change(function (){
+              updateFourSql();
+          });
+        $('#ESU_law').change(function (){
+              updateFourSql();
+          });
+     
+     
+        
+    function updateFiveSql() {
+              var sqlVLCII = "SELECT * FROM intervenors_1";
+              var whereConditions = [];
+            
+    if ($('#VLC_ind').is(':checked')) {
+                  whereConditions.push("category = 'Ind' AND project = 'VLC'");
+              }
+ 	 if ($('#VLC_adv').is(':checked')) {
+                  whereConditions.push("category = 'Adv' AND project = 'VLC'");
+              }
+ 	 if ($('#VLC_gov').is(':checked')) {
+                  whereConditions.push("category = 'Gov' AND project = 'VLC'");
+              }
+ 	 if ($('#VLC_bus').is(':checked')) {
+                  whereConditions.push("category = 'Bus' AND project = 'VLC'");
+              }
+ 	 if ($('#VLC_law').is(':checked')) {
+                  whereConditions.push("category = 'Lf' AND project = 'VLC'");
+              }
+            
+            if (whereConditions.length > 0) {
+                  sqlVLCII+= ' WHERE ' + whereConditions.join(' OR ');
+              }
+              console.log(sqlVLCII);
+              dataLayerINT.setSQL(sqlVLCII);
+           }
+          
+        $('#VLC_ind').change(function (){
+              updateFiveSql();
+          });
+        $('#VLC_adv').change(function (){
+              updateFiveSql();
+          });
+        $('#VLC_gov').change(function (){
+              updateFiveSql();
+          });
+        $('#VLC_bus').change(function (){
+              updateFiveSql();
+          });
+        $('#VLC_law').change(function (){
+              updateFiveSql();
+          });
+     
+     
+
+    });
+</script>    
+<script>
+    
+function openCity(evt, cityName) {
+    var i, tabcontent, tablinks;
+    
+    var sqlPenn = "SELECT * FROM intervenors_1 WHERE project = 'PE'";
+    
+    var sqlAIM = "SELECT * FROM intervenors_1 WHERE project = 'AIM'";
+    
+    var sqlNMD = "SELECT * FROM intervenors_1 WHERE project = 'NMD'";
+    
+    var sqlESU = "SELECT * FROM intervenors_1 WHERE project = 'ESU'";
+    
+    var sqlVLC = "SELECT * FROM intervenors_1 WHERE project = 'VLC'";
+    
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    
+    if (cityName === 'PennEast') {
+        dataLayerPE.show();
+        dataLayerVLC.hide();
+        dataLayerAIM.hide();
+        dataLayerNM.hide();
+        dataLayerESU.hide();
+        dataLayerINT.setSQL(sqlPenn);
+    }
+    
+    
+        if (cityName === 'AIM') {
+        dataLayerAIM.show();
+        dataLayerPE.hide();
+        dataLayerVLC.hide();
+        dataLayerNM.hide();
+        dataLayerESU.hide();  
+        dataLayerINT.setSQL(sqlAIM);   
+    }
+    
+        if (cityName === 'NMD') {
+        dataLayerAIM.hide();
+        dataLayerPE.hide();
+        dataLayerVLC.hide();
+        dataLayerNM.show();
+        dataLayerESU.hide(); 
+        dataLayerINT.setSQL(sqlNMD);
+    }
+    
+        if (cityName === 'ESU') {
+        dataLayerAIM.hide();
+        dataLayerPE.hide();
+        dataLayerVLC.hide();
+        dataLayerNM.hide();
+        dataLayerESU.show();
+        dataLayerINT.setSQL(sqlESU);      
+    }
+    
+        if (cityName === 'VLC') {
+        dataLayerAIM.hide();
+        dataLayerPE.hide();
+        dataLayerVLC.show();
+        dataLayerNM.hide();
+        dataLayerESU.hide();
+        dataLayerINT.setSQL(sqlVLC);
+    }
+    
+    
+    
+    
+    document.getElementById(cityName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
+</script>
+    
+    </head>
+
+
+<body>
+    <div id="map"></div>
+    
+
+<!--top panel-->
+    <div id="side-box" class="sidepanel" style="display:block;">
+<!--wrapper-->
+<!--        <div class="wrapper">-->
+            
+            <h1 style="margin: 14px 17px;">5 Northeast Pipeline Projects | Intervenors</h1>
+<!--        </div>-->
+        
+        
+    <ul class="tab">
+        <li><a href="javascript:void(0)" class="tablink" onclick="openCity(event,'PennEast')" style="background: #7ac2b9;">PE</a></li>
+        <li><a href="javascript:void(0)" class="tablink" onclick="openCity(event,'AIM')"  style="background: #f7a541;">AIM</a>
+        </li>        
+        <li><a href="javascript:void(0)" class="tablink" onclick="openCity(event,'NMD')"  style="background: #39e7b2;">New Market</a>
+        </li>        
+        <li><a href="javascript:void(0)" class="tablinks" onclick="openCity(event,'ESU')"  style="background: #f45d4c;">ESU</a>
+        </li>       
+        <li><a href="javascript:void(0)" class="tablink" onclick="openCity(event,'VLC')" style="background: #268c8e;">VLC</a>
+        </li>
+        </ul>
+        
+<!--Tab one        -->
+        <div id="PennEast" class="tabcontent">
+  <span onclick="this.parentElement.style.display='none'" class="topright">x</span>
+            
+            <p>Penn East</p>
+            <p>Intervenors:</p>
+        <input type="checkbox" id="PE_ind">
+                     <label class="checkbox-label" for="PE_ind">Individuals</label>
+                <br>
+        <input type="checkbox" id="PE_adv">
+                     <label class="checkbox-label" for="PE_adv">Advocacy Groups</label>
+                <br>
+	   <input type="checkbox" id="PE_gov">
+                     <label class="checkbox-label" for="PE_gov">Government Agencies</label>
+                <br>
+        <input type="checkbox" id="PE_bus">
+                     <label class="checkbox-label" for="PE_bus">Businesses</label>
+                <br>
+	   <input type="checkbox" id="PE_law">
+                     <label class="checkbox-label" for="PE_law">Law Firms</label>
+                <br>
+    
+</div>
+
+<!--tab two-->
+        <div id="AIM" class="tabcontent">
+            <span onclick="this.parentElement.style.display='none'" class="topright">x</span>
+              
+            <p>AIM</p>
+            <p>Intervenors:</p>
+        <input type="checkbox" id="AIM_ind">
+                     <label class="checkbox-label" for="AIM_ind">Individuals</label>
+                <br>
+        <input type="checkbox" id="AIM_adv">
+                     <label class="checkbox-label" for="AIM_adv">Advocacy Groups</label>
+                <br>
+	   <input type="checkbox" id="AIM_gov">
+                     <label class="checkbox-label" for="AIM_gov">Government Agencies</label>
+                <br>
+        <input type="checkbox" id="AIM_bus">
+                     <label class="checkbox-label" for="AIM_bus">Businesses</label>
+                <br>
+	   <input type="checkbox" id="AIM_law">
+                     <label class="checkbox-label" for="AIM_law">Law Firms</label>
+                <br>
+        
+        </div>
+        
+<!--tab three-->
+        <div id="NMD" class="tabcontent">
+            <span onclick="this.parentElement.style.display='none'" class="topright">x</span>  
+            
+            <p>New Market Domain</p>
+            <p>Intervenors:</p>
+        <input type="checkbox" id="NMD_ind">
+                     <label class="checkbox-label" for="MDN_ind">Individuals</label>
+                <br>
+        <input type="checkbox" id="NMD_adv">
+                     <label class="checkbox-label" for="NMD_adv">Advocacy Groups</label>
+                <br>
+	   <input type="checkbox" id="NMD_gov">
+                     <label class="checkbox-label" for="NMD_gov">Government Agencies</label>
+                <br>
+        <input type="checkbox" id="NMD_bus">
+                     <label class="checkbox-label" for="NMD_bus">Businesses</label>
+                <br>
+	   <input type="checkbox" id="NMD_law">
+                     <label class="checkbox-label" for="NMD_law">Law Firms</label>
+                <br>
+        
+        </div>
+        
+        
+        
+<!--tab four    -->
+        <div id="ESU" class="tabcontent">
+            <span onclick="this.parentElement.style.display='none'" class="topright">x</span>  
+            
+            <p>ESU</p>
+            <p>Intervenors:</p>
+        <input type="checkbox" id="ESU_ind">
+                     <label class="checkbox-label" for="ESU_ind">Individuals</label>
+                <br>
+        <input type="checkbox" id="ESU_adv">
+                     <label class="checkbox-label" for="ESU_adv">Advocacy Groups</label>
+                <br>
+	   <input type="checkbox" id="ESU_gov">
+                     <label class="checkbox-label" for="ESU_gov">Government Agencies</label>
+                <br>
+        <input type="checkbox" id="ESU_bus">
+                     <label class="checkbox-label" for="ESU_bus">Businesses</label>
+                <br>
+	   <input type="checkbox" id="ESU_law">
+                     <label class="checkbox-label" for="ESU_law">Law Firms</label>
+                <br>
+        
+        </div>
+        
+        
+<!--tab five        -->
+        <div id="VLC" class="tabcontent">
+            <span onclick="this.parentElement.style.display='none'" class="topright">x</span> 
+            
+        
+            <p>VLC</p>
+            <p>Intervenors:</p>
+        <input type="checkbox" id="VLC_ind">
+                     <label class="checkbox-label" for="VLC_ind">Individuals</label>
+                <br>
+        <input type="checkbox" id="VLC_adv">
+                     <label class="checkbox-label" for="VLC_adv">Advocacy Groups</label>
+                <br>
+	   <input type="checkbox" id="VLC_gov">
+                     <label class="checkbox-label" for="VLC_gov">Government Agencies</label>
+                <br>
+        <input type="checkbox" id="VLC_bus">
+                     <label class="checkbox-label" for="VLC_bus">Businesses</label>
+                <br>
+	   <input type="checkbox" id="VLC_law">
+                     <label class="checkbox-label" for="VLC_law">Law Firms</label>
+                <br>
+        
+        </div>
+        
+    </div>
+    
+    
+    
+</body>
+</html>
